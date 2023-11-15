@@ -26,6 +26,7 @@ def get_product_list(last_id, client_id, seller_token):
         >>> last_id = ""
         >>> client_id = "1234"
         >>> seller_token = "abcd1312"
+        >>> get_product_list(last_id, client_id, seller_token)
         "{
             'id':1,
             'name': 'Тестовый товар',
@@ -36,6 +37,7 @@ def get_product_list(last_id, client_id, seller_token):
         >>> last_id = ""
         >>> client_id = "1234"
         >>> seller_token = "wrong_token"
+        >>> get_product_list(last_id, client_id, seller_token)
         requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url:
             https://api-seller.ozon.ru/v2/product/list
     """
@@ -70,9 +72,11 @@ def get_offer_ids(client_id, seller_token):
     Examples:
         >>> client_id = "1234"
         >>> seller_token = "abcd1312"
+        >>> get_offer_ids(client_id, seller_token)
         ['offer_id1','offer_id2']
         >>> client_id = "1234"
         >>> seller_token = "wrong_token"
+        >>> get_offer_ids(client_id, seller_token)
         requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url:
             https://api-seller.ozon.ru/v2/product/list
     """
@@ -103,17 +107,26 @@ def update_price(prices: list, client_id, seller_token):
         dict: возвращает словарь ответа на запрос в JSON-формате
 
     Examples:
-        >>> prices = [{'Код':'1234', 'Цена':'999'},{'Код':'12345', 'Цена':'9998'}]
+        >>> prices = [
+                {'Код':'1234', 'Цена':'999'},
+                {'Код':'12345', 'Цена':'9998'}
+            ]
         >>> client_id = "1234"
         >>> seller_token = "abcd1312"
+        >>> update_price(prices, client_id, seller_token)
         {
-        "product_id": 1234,
-        "offer_id": "offer_id1",
-        "updated": true,
-        "errors": [ ]
+            "product_id": 1234,
+            "offer_id": "offer_id1",
+            "updated": true,
+            "errors": [ ]
         }
+        >>> prices = [
+                {'Код':'1234', 'Цена':'999'},
+                {'Код':'12345', 'Цена':'9998'}
+            ]
         >>> client_id = ""
         >>> seller_token = "abcd1312"
+        >>> update_price(prices, client_id, seller_token)
         {"code":16,"message":"Client-Id and Api-Key headers are required"}
     """
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
@@ -145,14 +158,20 @@ def update_stocks(stocks: list, client_id, seller_token):
         ]
         >>> client_id = "1234"
         >>> seller_token = "abcd1312"
+        >>> update_stocks(stocks, client_id, seller_token)
         {
         "product_id": 1234,
         "offer_id": "offer_id1",
         "updated": true,
         "errors": [ ]
         }
+        >>> stocks = [
+            {'Код':'1234', 'Количество':'4'},
+            {'Код':'12345', 'Количество':'3'}
+        ]
         >>> client_id = ""
         >>> seller_token = "abcd1312"
+        >>> update_stocks(stocks, client_id, seller_token)
         {"code":16,"message":"Client-Id and Api-Key headers are required"}
     """
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
@@ -211,6 +230,7 @@ def create_stocks(watch_remnants, offer_ids):
                 {'Код':'12345', 'Количество':'3'}
             ]
         >>> offer_ids = ['1234','2346']
+        >>> create_stocks(watch_remnants, offer_ids)
         [
             {'offer_id':'1234', 'stock':4},
             {'offer_id':'12345', 'stock':3},
@@ -218,6 +238,7 @@ def create_stocks(watch_remnants, offer_ids):
         ]
         >>> watch_remnants = []
         >>> offer_ids = []
+        >>> create_stocks(watch_remnants, offer_ids)
         []
     """
     # Уберем то, что не загружено в seller
@@ -255,6 +276,7 @@ def create_prices(watch_remnants, offer_ids):
                 {'Код':'12345', 'Цена':'3000.0'}
             ]
         >>> offer_ids = ['1234','2346']
+        >>> create_prices(watch_remnants, offer_ids)
         [
              {
                 "auto_action_enabled": "UNKNOWN",
@@ -266,6 +288,7 @@ def create_prices(watch_remnants, offer_ids):
         ]
         >>> watch_remnants = []
         >>> offer_ids = []
+        >>> create_prices(watch_remnants, offer_ids)
         []
     """
     prices = []
@@ -340,6 +363,39 @@ async def upload_prices(watch_remnants, client_id, seller_token):
 
     Returns:
         list: список цен
+
+    Examples:
+        >>> watch_remnants = [
+                {'Код':'1234', 'Цена':'4000.0'},
+                {'Код':'12345', 'Цена':'3000.0'}
+            ]
+        >>> client_id = '123123'
+        >>> seller_token = 'abc123'
+        >>> upload_prices(watch_remnants, client_id, seller_token)
+        [
+             {
+                "auto_action_enabled": "UNKNOWN",
+                "currency_code": "RUB",
+                "offer_id": "1234",
+                "old_price": "0",
+                "price": 4000),
+            },
+             {
+                "auto_action_enabled": "UNKNOWN",
+                "currency_code": "RUB",
+                "offer_id": "12345",
+                "old_price": "0",
+                "price": 3000),
+            },
+        ]
+        >>> watch_remnants = [
+                {'Код':'1234', 'Цена':'4000.0'},
+                {'Код':'12345', 'Цена':'3000.0'}
+            ]
+        >>> client_id = '123123'
+        >>> seller_token = 'wrong_token'
+        >>> upload_prices(watch_remnants, client_id, seller_token)
+        []
     """
     offer_ids = get_offer_ids(client_id, seller_token)
     prices = create_prices(watch_remnants, offer_ids)
@@ -358,6 +414,32 @@ async def upload_stocks(watch_remnants, client_id, seller_token):
 
     Returns:
         tuple: кортеж из непустых остатков и всех остатков
+
+    Examples:
+        >>> watch_remnants = [
+                {'Код':'1234', 'Количество':'4'},
+                {'Код':'12345', 'Количество':'3'}
+            ]
+        >>> client_id = '123123'
+        >>> seller_token = 'abc123'
+        >>> upload_stocks(watch_remnants, client_id, seller_token)
+        (
+            [
+                {'offer_id':'1234', 'stock':4},
+                {'offer_id':'12345', 'stock':3}
+            ],
+            [
+                {'offer_id':'2346', 'stock':0}
+            ]
+        )
+        >>> watch_remnants = []
+        >>> client_id = '123123'
+        >>> seller_token = 'wrong_token'
+        >>> upload_stocks(watch_remnants, client_id, seller_token)
+        (
+            [],
+            []
+        )
     """
     offer_ids = get_offer_ids(client_id, seller_token)
     stocks = create_stocks(watch_remnants, offer_ids)
