@@ -36,7 +36,8 @@ def get_product_list(last_id, client_id, seller_token):
         >>> last_id = ""
         >>> client_id = "1234"
         >>> seller_token = "wrong_token"
-        requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api-seller.ozon.ru/v2/product/list
+        requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url:
+            https://api-seller.ozon.ru/v2/product/list
     """
     url = "https://api-seller.ozon.ru/v2/product/list"
     headers = {
@@ -72,7 +73,8 @@ def get_offer_ids(client_id, seller_token):
         ['offer_id1','offer_id2']
         >>> client_id = "1234"
         >>> seller_token = "wrong_token"
-        requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api-seller.ozon.ru/v2/product/list
+        requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url:
+            https://api-seller.ozon.ru/v2/product/list
     """
     last_id = ""
     product_list = []
@@ -329,6 +331,16 @@ def divide(lst: list, n: int):
 
 
 async def upload_prices(watch_remnants, client_id, seller_token):
+    """Асинхронно загружает цены на товары.
+
+    Args:
+        watch_remnants: информация о товарах
+        client_id: идентификатор клиента
+        seller_token: токен продавца
+
+    Returns:
+        list: список цен
+    """
     offer_ids = get_offer_ids(client_id, seller_token)
     prices = create_prices(watch_remnants, offer_ids)
     for some_price in list(divide(prices, 1000)):
@@ -337,6 +349,16 @@ async def upload_prices(watch_remnants, client_id, seller_token):
 
 
 async def upload_stocks(watch_remnants, client_id, seller_token):
+    """Асинхронно загрузить информацию об остатках товаров.
+
+    Args:
+        watch_remnants: информация о товарах
+        client_id: идентификатор клиента
+        seller_token: токен продавца
+
+    Returns:
+        tuple: кортеж из непустых остатков и всех остатков
+    """
     offer_ids = get_offer_ids(client_id, seller_token)
     stocks = create_stocks(watch_remnants, offer_ids)
     for some_stock in list(divide(stocks, 100)):
@@ -346,7 +368,17 @@ async def upload_stocks(watch_remnants, client_id, seller_token):
 
 
 def main():
-    """Обновить цены и остатки товаров на маркетплейсе Ozon."""
+    """Обновить цены и остатки товаров на маркетплейсе Ozon.
+
+    Загружает с сайта-производителя и обновляет информацию об остатках и ценах
+    товаров на маркетплейсе Ozon.
+    Если возникают ошибки, выводит соответствующие сообщения.
+
+    Raises:
+        requests.exceptions.ReadTimeout: превышено время ожидания запроса.
+        requests.exceptions.ConnectionError: возникла ошибка соединения.
+        Exception: любая другая необработанная ошибка.
+    """
     env = Env()
     seller_token = env.str("SELLER_TOKEN")
     client_id = env.str("CLIENT_ID")
