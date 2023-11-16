@@ -20,8 +20,8 @@ def get_product_list(last_id, client_id, seller_token):
         seller_token (str): токен продавца
 
     Returns:
-        str: значение по ключу "result" из словаря response_object
-
+        dict: список товаров, их количество и id последнего
+ 
     Examples:
         >>> last_id = ""
         >>> client_id = "1234"
@@ -104,7 +104,7 @@ def update_price(prices: list, client_id, seller_token):
         seller_token (str): токен продавца
 
     Returns:
-        dict: возвращает словарь ответа на запрос в JSON-формате
+        dict: ответ сервера с артикулами обновленных товаров
 
     Examples:
         >>> prices = [
@@ -149,7 +149,7 @@ def update_stocks(stocks: list, client_id, seller_token):
         seller_token (str): токен продавца
 
     Returns:
-        dict: возвращает словарь ответа на запрос в JSON-формате
+        dict: ответ сервера с артикулами обновленных товаров
 
     Examples:
         >>> stocks = [

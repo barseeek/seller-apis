@@ -55,7 +55,7 @@ def update_stocks(stocks, campaign_id, access_token):
         access_token (str): токен доступа
 
     Returns:
-        dict: ответ от сервера в формате JSON с информацией об остатках
+        dict: статус ответа от сервера
 
     Examples:
         >>> update_stocks(
@@ -111,7 +111,7 @@ def update_price(prices, campaign_id, access_token):
         access_token (str): токен доступа
 
     Returns:
-        dict: ответ от сервера в формате JSON с информацией о ценах
+        dict: статус ответа от сервера
 
     Examples:
         >>> update_price(
